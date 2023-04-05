@@ -1,0 +1,16 @@
+{{$name :=  include "component.name" . }}
+{{ range $topic := .Values.topics_infra }}
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: {{ $topic }}
+  labels:
+    strimzi.io/cluster: {{ $name }}
+spec:
+  partitions: 2
+  replicas: 2
+  config:
+    retention.ms: 864000000
+    delete.retention.ms: 864000000
+{{end}}

@@ -1,0 +1,56 @@
+---
+helmDefaults:
+    kubeContext: docker-desktop
+    cleanupOnFail: false
+    verify: false
+    wait: true
+    timeout: 600
+    force: false
+    historyMax: 10
+    createNamespace: false
+
+repositories:
+    - name: strimzi
+      url: https://strimzi.io/charts/
+    - name: bitnami
+      url: https://charts.bitnami.com/bitnami
+    - name: akhq
+      url: https://akhq.io/
+
+
+releases:
+    - name: strimzi-operator
+      chart: strimzi/strimzi-kafka-operator
+      version: 0.33.2
+      values:
+        - values/strimzi-operator.values.yaml
+    - name: kafka
+      needs:
+        - strimzi-operator
+      chart: ./charts/kafka
+      version: 0.0.1
+    - name: schema-registry
+      needs:
+        - kafka
+      chart: bitnami/schema-registry
+      version: 9.0.1
+      values:
+        - values/schema-registry.values.yaml
+    - name: akhq
+      needs:
+        - schema-registry
+      chart: akhq/akhq
+      version: 0.3.1
+      values:
+        - values/akhq.values.yaml
+    - name: tdengine
+      chart: ./charts/tdengine
+      version: 3.0.2
+      values:
+          - values/tdengine.values.yaml
+    - name: kafka-connect-tdengine
+      needs:
+        - kafka
+        - tdengine
+      chart: ./charts/kafka-connect-tdengine
+      version: 0.0.1

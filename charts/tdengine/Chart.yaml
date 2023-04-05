@@ -1,0 +1,11 @@
+apiVersion: v2
+appVersion: 3.0.2.2
+description: TDengine Cluster Chart for Kubenetes
+icon: https://www.taosdata.com/images/taosdata-logo.png
+maintainers:
+- email: linhe.huo@gmail.com
+  name: Huo Linhe
+  url: https://github.com/zitsen
+name: tdengine
+type: application
+version: 3.0.2

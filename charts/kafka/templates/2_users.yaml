@@ -1,0 +1,25 @@
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaUser
+metadata:
+  name: super-user
+  labels:
+    strimzi.io/cluster: {{include "component.name" .}}
+spec:
+  authentication:
+    type: scram-sha-512
+  authorization:
+    type: simple
+    acls:
+      - resource:
+          type: topic
+          name: "*"
+        operations:
+          - All
+        host: "*"
+      - resource:
+          type: group
+          name: "*"
+        operations:
+          - All
+        host: "*"

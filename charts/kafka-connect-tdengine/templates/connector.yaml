@@ -1,0 +1,21 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: {{include "component.name" .}}-connector
+  labels:
+    strimzi.io/cluster: {{include "component.name" .}}-connect-cluster
+spec:
+  class: com.taosdata.kafka.connect.sink.TDengineSinkConnector
+  tasksMax: 1
+  autoRestart:
+    enabled: true
+  config:
+    topics: {{ .Values.kafka_connector_config_topic }}
+    connection.url: jdbc:TAOS://{{ .Values.kafka_connector_config_tdengine_url }}:6030
+    connection.user: {{ .Values.kafka_connector_config_connect_user }}
+    connection.password: {{ .Values.kafka_connector_config_connect_password }}
+    connection.database: {{ .Values.kafka_connector_config_connect_database }}
+    db.schemaless: "line"
+    data.precision: "ns"
+    key.converter: "org.apache.kafka.connect.storage.StringConverter"
+    value.converter: "org.apache.kafka.connect.storage.StringConverter"

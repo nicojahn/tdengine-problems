@@ -1,0 +1,43 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnect
+metadata:
+  name: {{include "component.name" .}}-connect-cluster
+  annotations:
+    strimzi.io/use-connector-resources: "true"
+spec:
+  replicas: {{ .Values.kafka_connect_replicas }}
+  bootstrapServers: {{ .Values.kafka_cluster }}-kafka-bootstrap:{{ .Values.kafka_bootstrap_server_port }}
+  image: {{ .Values.kafka_connect_image }}:{{ .Values.kafka_connect_image_tag }}
+  authentication:
+    username: {{include "component.name" .}}-user
+    type: scram-sha-512
+    passwordSecret:
+      secretName: {{include "component.name" .}}-user
+      password: password
+  tls:
+    trustedCertificates:
+      - secretName: {{ .Values.kafka_cluster }}-cluster-ca-cert
+        certificate: ca.crt
+  config:
+    group.id: {{include "component.name" .}}-group
+    offset.storage.topic: {{include "component.name" .}}-connect-offsets
+    config.storage.topic: {{include "component.name" .}}-connect-configs
+    status.storage.topic: {{include "component.name" .}}-connect-status
+
+    # -1 means it will use the default replication factor configured in the broker
+    config.storage.replication.factor: -1
+    offset.storage.replication.factor: -1
+    status.storage.replication.factor: -1
+
+  logging:
+    type: inline
+    loggers:
+      log4j.rootLogger: {{ .Values.log_level }}
+
+  template:
+    buildPod:
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets }}
+    pod:
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets }}

@@ -1,0 +1,53 @@
+---
+image:
+    prefix: tdengine/tdengine
+    tag: 3.0.2.6
+    pullPolicy: Always
+
+timezone: Europe/Berlin
+
+storage:
+    dataSize: 10Gi
+    logSize: 10Gi
+
+sidecar:
+    - name: init-db
+      image: curlimages/curl:latest
+      command:
+          - /bin/sh
+          - -c
+      args:
+          - "curl -L -H \"Authorization: Basic $(echo -n ${ROOT_USER}:${ROOT_PASSWORD} | base64)\" -d \"$(echo ${SQL_QUERY} | tr '\n' ' ')\" ${POD_IP}:${TAOS_REST_SERVER_PORT}/rest/sql\
+            \ && echo && echo \"Done\" && sleep infinity"
+      env:
+          - name: ROOT_USER
+            valueFrom:
+                secretKeyRef:
+                    name: tdengine
+                    key: root_user
+          - name: ROOT_PASSWORD
+            valueFrom:
+                secretKeyRef:
+                    name: tdengine
+                    key: root_password
+          - name: SQL_QUERY
+            valueFrom:
+                secretKeyRef:
+                    name: tdengine
+                    key: sql_query
+          - name: POD_IP
+            valueFrom:
+                fieldRef:
+                    fieldPath: status.podIP
+          - name: TAOS_REST_SERVER_PORT
+            value: '6041'
+
+extraSecrets:
+    root_user: root
+    root_password: taosdata
+    sql_query: |-
+        CREATE DATABASE IF NOT EXISTS Test KEEP 365000d PRECISION 'ms';
+        USE Test;
+        CREATE STABLE IF NOT EXISTS TestSTable (ts TIMESTAMP, val FLOAT) TAGS (TAGONE NCHAR(5), TableName NCHAR(100));
+        SHOW STABLES;
+        SHOW TABLES;

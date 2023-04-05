@@ -1,0 +1,45 @@
+---
+secrets:
+    akhq:
+        connections:
+            cluster:
+                properties:
+                    bootstrap.servers: kafka-default-kafka-bootstrap:9093
+                    security.protocol: SASL_SSL
+                    sasl.mechanism: SCRAM-SHA-512
+                    sasl.jaas.config: ${SASL_JAAS_CONFIG}
+                    ssl.truststore.location: /app/secrets/trustore/ca.p12
+                    ssl.truststore.password: ${TRUST_STORE_PASSWORD}
+                    ssl.keystore.location: /app/secrets/keystore/ca.p12
+                    ssl.keystore.password: ${KEY_STORE_PASSWORD}
+                schema-registry:
+                    url: http://schema-registry:8081
+                    type: confluent
+extraEnv:
+    - name: SASL_JAAS_CONFIG
+      valueFrom:
+          secretKeyRef:
+              key: sasl.jaas.config
+              name: super-user
+    - name: TRUST_STORE_PASSWORD
+      valueFrom:
+          secretKeyRef:
+              key: ca.password
+              name: kafka-default-cluster-ca-cert
+    - name: KEY_STORE_PASSWORD
+      valueFrom:
+          secretKeyRef:
+              key: ca.password
+              name: kafka-default-clients-ca-cert
+extraVolumes:
+    - name: secrets-certs-trustore
+      secret:
+          secretName: kafka-default-cluster-ca-cert
+    - name: secrets-certs-keystore
+      secret:
+          secretName: kafka-default-clients-ca-cert
+extraVolumeMounts:
+    - name: secrets-certs-trustore
+      mountPath: /app/secrets/trustore
+    - name: secrets-certs-keystore
+      mountPath: /app/secrets/keystore

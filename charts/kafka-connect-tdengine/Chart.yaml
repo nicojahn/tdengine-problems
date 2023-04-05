@@ -1,0 +1,4 @@
+apiVersion: v1
+description: kafka connect/connector cluster declaration for tdengine
+name: kafka-connect-tdengine
+version: 0.0.1

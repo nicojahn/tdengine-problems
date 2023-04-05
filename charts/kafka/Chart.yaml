@@ -1,0 +1,4 @@
+apiVersion: v1
+description: kafka cluster declaration
+name: kafka
+version: 0.0.1

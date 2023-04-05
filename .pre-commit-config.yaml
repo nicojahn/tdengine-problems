@@ -1,0 +1,51 @@
+---
+repos:
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v4.1.0
+      hooks:
+          - id: end-of-file-fixer
+          - id: trailing-whitespace
+          - id: check-json
+
+    - repo: https://github.com/zricethezav/gitleaks
+      rev: v8.5.3
+      hooks:
+          - id: gitleaks
+
+    - repo: https://github.com/myint/docformatter
+      rev: v1.4
+      hooks:
+          - id: docformatter
+            args: [--in-place]
+
+    - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
+      rev: 0.2.2
+      hooks:
+          - id: yamlfmt
+            exclude: |
+                (?x)(
+                    ^charts/ |
+                    ^helmfile.yaml |
+                    ^values.yaml
+                )
+
+    - repo: https://github.com/adrienverge/yamllint.git
+      rev: v1.27.1  # or higher tag
+      hooks:
+          - id: yamllint
+            args: [-c, .yamllint-config.yaml, --format, parsable, --no-warnings]
+            exclude: |
+                (?x)(
+                    ^charts/ |
+                    ^helmfile.yaml |
+                    ^values.yaml
+                )
+
+    - repo: https://github.com/gruntwork-io/pre-commit
+      rev: v0.1.17 # Get the latest from: https://github.com/gruntwork-io/pre-commit/releases
+      hooks:
+          - id: helmlint
+            exclude: |
+                (?x)(
+                    ^charts/ |
+                )

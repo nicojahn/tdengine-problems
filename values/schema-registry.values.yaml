@@ -1,0 +1,18 @@
+---
+kafka:
+    enabled: false
+image:
+    debug: true
+extraEnvVars:
+    - name: SCHEMA_REGISTRY_KAFKA_SASL_MECHANISM
+      value: SCRAM-SHA-512
+    - name: SCHEMA_REGISTRY_KAFKA_SASL_USERS
+      value: super-user
+    - name: SCHEMA_REGISTRY_KAFKA_SASL_PASSWORDS
+      valueFrom:
+          secretKeyRef:
+              key: password
+              name: super-user
+externalKafka:
+    brokers:
+        - SASL_PLAINTEXT://kafka-default-kafka-bootstrap:9092
