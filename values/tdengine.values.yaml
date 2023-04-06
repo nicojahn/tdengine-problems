@@ -17,7 +17,7 @@ sidecar:
           - /bin/sh
           - -c
       args:
-          - "curl -L -H \"Authorization: Basic $(echo -n ${ROOT_USER}:${ROOT_PASSWORD} | base64)\" -d \"$(echo ${SQL_QUERY} | tr '\n' ' ')\" ${POD_IP}:${TAOS_REST_SERVER_PORT}/rest/sql\
+          - "sleep 30 && curl -L -H \"Authorization: Basic $(echo -n ${ROOT_USER}:${ROOT_PASSWORD} | base64)\" -d \"$(echo ${SQL_QUERY} | tr '\n' ' ')\" ${POD_IP}:${TAOS_REST_SERVER_PORT}/rest/sql\
             \ && echo && echo \"Done\" && sleep infinity"
       env:
           - name: ROOT_USER
